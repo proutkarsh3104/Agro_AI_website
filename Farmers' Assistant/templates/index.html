@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Farmers' Assistant</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        #answer { margin-top: 20px; white-space: pre-wrap; line-height: 1.6; }
+        input { width: 70%; padding: 10px; }
+        button { padding: 10px 20px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🌱 Farmers' Assistant</h1>
+    <input type="text" id="question" placeholder="Ask about crops, weather, pests...">
+    <button onclick="ask()">Ask</button>
+    <div id="answer"></div>
+
+    <script>
+        async function ask() {
+            const question = document.getElementById('question').value;
+            const answerDiv = document.getElementById('answer');
+            
+            if (!question) {
+                answerDiv.innerText = "Please type a question.";
+                return;
+            }
+
+            answerDiv.innerText = "Thinking...";
+            
+            try {
+                const response = await fetch('http://localhost:5000/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    answerDiv.innerText = `Error: ${data.error}`;
+                } else {
+                    answerDiv.innerText = data.answer;
+                }
+                
+            } catch (error) {
+                answerDiv.innerText = "Failed to connect to the server.";
+            }
+        }
+    </script>
+</body>
+</html>
